@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+    /* --- THEME COLORS --- */
+    --primary: #1e3a8a;       /* Blue: Main buttons & Headers */
+    --primary-light: #eff6ff;
+
+    --secondary: #059669;     /* Green: Correct answers */
+    --secondary-light: #ecfdf5;
+
+    --accent-1: #f59e0b;      /* Gold: Trophies */
+    --accent-1-light: #fffbeb;
+
+    --accent-2: #ef4444;      /* Red: Wrong answers */
+    --accent-2-light: #fef2f2;
+
+    /* --- TYPOGRAPHY --- */
+    --font-ui: 'Inter', sans-serif;
+    --font-scripture: 'Playfair Display', serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-ui);
+}
+
+img {
+  max-width: 100%;
+}

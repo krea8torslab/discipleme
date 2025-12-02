@@ -1,0 +1,43 @@
+#main-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1170px;
+  margin: auto;
+  height: 70px;
+  padding: 0 16px;
+
+  #logo {
+    width: 44px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .streak {
+    display: flex;
+    align-items: center;
+  }
+
+  .streak span {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .streak svg {
+    width: 44px;
+  }
+}
+
+
+#main-footer {
+  p {
+    text-align: center;
+  }
+
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
