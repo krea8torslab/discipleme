@@ -9,6 +9,7 @@
   <meta name="description"
     content="Make scripture memorization fun with DiscipleMe. Turn Bible study into an interactive game, track your progress, and get AI-powered spiritual insights.">
 
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://discipleme.vercel.app/" />
   <meta property="og:title" content="DiscipleMe - Gamified Scripture Memorization" />
@@ -45,7 +46,7 @@
         <div class="book">
           <label for="books">Book</label>
           <select name="books" id="books">
-            <!-- Dynamic Content-->
+            <!-- Dynamic Content -->
           </select>
         </div>
 
@@ -62,7 +63,7 @@
             <input list="verses" id="verse-choice" name="verse-choice" placeholder="e.g. 1-2">
 
             <datalist id="verses">
-              <!-- Dynamic content -->
+              <!-- Dynamic Content -->
             </datalist>
           </div>
         </div>
@@ -113,9 +114,8 @@
     </section>
 
     <section id="game-container" class="hidden">
-      <!-- 1. Top Bar -->
+      <!-- Top Bar -->
       <div class="game-top-bar">
-        <!-- ADDED: btn-primary class -->
         <button class="close-btn btn-primary" onclick="window.location.href='/'">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
             <path fill="#fff" d="M73.4 297.4C60.9 309.9 60.9 330.2 73.4 342.7L233.4 502.7C245.9 515.2 266.2 515.2 278.7 502.7C291.2 490.2 291.2 469.9 278.7 457.4L173.3 352L544 352C561.7 352 576 337.7 576 320C576 302.3 561.7 288 544 288L173.3 288L278.7 182.6C291.2 170.1 291.2 149.8 278.7 137.3C266.2 124.8 245.9 124.8 233.4 137.3L73.4 297.3z"/></svg> Back
@@ -129,17 +129,17 @@
         </button>
       </div>
 
-      <!-- 2. Scripture Display -->
+      <!-- Scripture Display -->
       <div class="scripture-display">
         <div class="reference-pill">
-          <!-- Dynamic content -->
+          <!-- Dynamic Content -->
         </div>
         <div class="scripture-text">
-          <!-- Dynamic content -->
+          <!-- Dynamic Content -->
         </div>
       </div>
 
-      <!-- 3. Word Bank (Bottom Sheet) -->
+      <!-- Word Bank (Bottom Sheet) -->
       <div class="word-bank">
         <div class="bank-handle"></div>
 
@@ -151,9 +151,7 @@
         </div>
 
         <div class="word-chips-container">
-          <button class="word-chip">heaven</button>
-          <button class="word-chip">earth</button>
-          <button class="word-chip">God</button>
+          <!-- Dynamic Content -->
         </div>
       </div>
     </section>
