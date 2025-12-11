@@ -1,25 +1,25 @@
-const dataset = 'open-cross-ref';
-"https://bible-api.com/GEN%203:16-18?translation=kjv"
+const translation = 'KJV'; 
 
-// Get the list of books for the open-cross-ref dataset
+// Get the list of books
 export async function getBooks(){
-    const data = await fetch(`https://bible.helloao.org/api/d/${dataset}/books.json`);
+    const data = await fetch(`https://bible.helloao.org/api/BSB/books.json`);
     const result = await data.json();
-    return result.books;
+    return result.books; // Returns the array of book objects
 }
 
 // Get number of verses in a chapter
 export async function getChapterVerses (book, chapter){
+    const dataset = 'open-cross-ref'; 
     const data = await fetch(`https://bible.helloao.org/api/d/${dataset}/${book}/${chapter}.json`);
     const result = await data.json();
     return result;
 }
 
 export async function getVerse(book, chapter, verse) {
-    // 1. Construct the string normally with spaces (e.g., "John 3:16")
+    // 1. Construct the string (e.g., "Genesis 3:16")
     const reference = `${book} ${chapter}:${verse}`;
     
-    // 2. Encode it safely (e.g., "John%203%3A16")
+    // 2. Encode it safely
     const encodedRef = encodeURIComponent(reference);
 
     // 3. Fetch
@@ -32,3 +32,4 @@ export async function getVerse(book, chapter, verse) {
     const result = await response.json();
     return result;
 }
+

@@ -1,17 +1,18 @@
 import { loadHeaderFooter, loadBooks, loadNumberOfChapters, loadNumberOfVerses, getParams, setParams } from "./utils.mjs";
 import { getVerse } from "./api.mjs";
-import { getVerseInsight, getVersePrayer } from "./ai.mjs"; // Import AI functions
+import { getVerseInsight, getVersePrayer } from "./ai.mjs"; 
 
 const booksElement = document.getElementById("books");
 const chaptersElement = document.getElementById("chapters");
+const verseElement = document.getElementById("verse-choice");
 const startButton = document.querySelector(".cta-section button");
 const difficultyButtons = document.querySelectorAll(".difficulty-section button");
+// Select the testament toggle buttons
+const testamentButtons = document.querySelectorAll(".books-button button");
 
-// Initialize App
 async function init() {
   await loadHeaderFooter();
-  await loadBooks();
-  
+  await loadBooks("Old Testament"); // Default to OT
   updateStreakUI();
 
   const params = getParams();
@@ -23,7 +24,24 @@ async function init() {
   }
 }
 
-// ... (Event listeners remain the same) ...
+// Add Testament Toggle Logic
+testamentButtons.forEach(button => {
+    button.addEventListener("click", async () => {
+        // Update Active State
+        testamentButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        // Load Books based on text content
+        const testament = button.textContent.trim();
+        await loadBooks(testament);
+        
+        // Reset dependent fields to the first book of the new testament
+        const newFirstBook = booksElement.value; // loadBooks sets this automatically to first option
+        await loadNumberOfChapters(newFirstBook);
+        await loadNumberOfVerses(newFirstBook, "1"); // Default to chapter 1
+    });
+});
+
 booksElement.addEventListener("change", async () => {
   await loadNumberOfChapters();
   await loadNumberOfVerses(booksElement.value, chaptersElement.value)
@@ -41,6 +59,11 @@ difficultyButtons.forEach(button => {
 });
 
 startButton.addEventListener("click", () => {
+    if(booksElement.value == "" || chaptersElement.value == "" || verseElement.value == ""){
+        alert("Missing Book, Chapter or Verse!!");
+        return;
+    }
+
   const book = booksElement.value;
   const chapter = chaptersElement.value;
   const verse = document.getElementById("verse-choice").value || "1"; 
@@ -69,9 +92,7 @@ function updateStreakUI() {
     }
 }
 
-// Simple Modal Logic for AI
 function showModal(title, content) {
-    // Create modal elements if they don't exist, or select them
     let modal = document.getElementById('ai-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -107,7 +128,6 @@ async function startGame(book, chapter, verse) {
       const progressBar = gameContainer.querySelector(".progress-bar"); 
       const hintButton = gameContainer.querySelector(".hint-btn");
       
-      // Add Insight Button next to Hint if not already there
       let insightButton = gameContainer.querySelector(".insight-btn");
       if (!insightButton && hintButton) {
           insightButton = document.createElement("button");
@@ -125,17 +145,17 @@ async function startGame(book, chapter, verse) {
         
         if(refPill) refPill.textContent = verseData.reference;
         
-        // Setup Insight Button Click
         if (insightButton) {
-            // Clone to remove old listeners
             const newInsightBtn = insightButton.cloneNode(true);
             insightButton.parentNode.replaceChild(newInsightBtn, insightButton);
+            insightButton = newInsightBtn;
             
-            newInsightBtn.addEventListener("click", async () => {
-                newInsightBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Loading...`;
+            insightButton.addEventListener("click", async () => {
+                const originalText = insightButton.innerHTML;
+                insightButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Loading...`;
                 const insight = await getVerseInsight(verseData.reference, verseData.text);
                 showModal("Verse Insight", insight);
-                newInsightBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Insight`;
+                insightButton.innerHTML = originalText;
             });
         }
 
@@ -144,7 +164,6 @@ async function startGame(book, chapter, verse) {
             let html = "";
             let hiddenWords = [];
 
-            // --- DIFFICULTY LOGIC ---
             let percentageToHide = 0.2; 
             const activeDifficultyBtn = document.querySelector(".difficulty-section button.active");
             
@@ -215,7 +234,6 @@ async function startGame(book, chapter, verse) {
                                 const percentage = (correctCount / totalBlanks) * 100;
                                 if(progressBar) progressBar.style.width = `${percentage}%`;
 
-                                // WIN CONDITION
                                 if (correctCount === totalBlanks) {
                                     let { streak, mastered } = getStorageData();
                                     const currentRef = verseData.reference;
@@ -227,9 +245,7 @@ async function startGame(book, chapter, verse) {
                                         updateStreakUI();
                                     }
                                     
-                                    // Trigger Win Modal with Prayer Button
                                     setTimeout(async () => {
-                                        // Create a custom content div for the modal
                                         const winContent = `
                                             <p style="margin-bottom: 1rem;">You mastered <strong>${verseData.reference}</strong>!</p>
                                             <button id="prayer-btn" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem; background-color: var(--accent-1); color: #fff;">
@@ -238,7 +254,6 @@ async function startGame(book, chapter, verse) {
                                         `;
                                         showModal("Verse Mastered! 🎉", winContent);
                                         
-                                        // Add Listener for Prayer Button
                                         const prayerBtn = document.getElementById("prayer-btn");
                                         if(prayerBtn) {
                                             prayerBtn.addEventListener("click", async () => {
