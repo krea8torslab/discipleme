@@ -98,20 +98,29 @@ function setupEventListeners() {
 
   // ========== APP VIEW EVENTS ==========
   
-  // Testament Toggle
-  testamentButtons.forEach(button => {
-    button?.addEventListener("click", async () => {
-      testamentButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
-      
-      const testament = button.textContent.trim();
-      await loadBooks(testament);
-      
-      const newFirstBook = booksElement?.value; 
-      await loadNumberOfChapters(newFirstBook);
-      await loadNumberOfVerses(newFirstBook, "1"); 
+  // Get DOM elements (these may not exist if not on app view)
+  const testamentButtons = document.querySelectorAll('.testament-toggle button');
+  const booksElement = document.getElementById('books');
+  const chaptersElement = document.getElementById('chapters');
+  const verseElement = document.getElementById('verse-choice');
+  const difficultyButtons = document.querySelectorAll('.difficulty-section button');
+  
+  // Testament Toggle (only if buttons exist)
+  if (testamentButtons.length > 0) {
+    testamentButtons.forEach(button => {
+      button?.addEventListener("click", async () => {
+        testamentButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        
+        const testament = button.textContent.trim();
+        await loadBooks(testament);
+        
+        const newFirstBook = booksElement?.value; 
+        await loadNumberOfChapters(newFirstBook);
+        await loadNumberOfVerses(newFirstBook, "1"); 
+      });
     });
-  });
+  }
 
   // Book selector change
   booksElement?.addEventListener("change", async () => {
@@ -124,13 +133,15 @@ function setupEventListeners() {
     await loadNumberOfVerses(booksElement?.value, chaptersElement.value);
   });
 
-  // Difficulty Selection
-  difficultyButtons.forEach(button => {
-    button?.addEventListener("click", () => {
-      difficultyButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
+  // Difficulty Selection (only if buttons exist)
+  if (difficultyButtons.length > 0) {
+    difficultyButtons.forEach(button => {
+      button?.addEventListener("click", () => {
+        difficultyButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+      });
     });
-  });
+  }
 
   // Start Memorizing Button
   document.getElementById('start-memorizing-btn')?.addEventListener("click", () => {

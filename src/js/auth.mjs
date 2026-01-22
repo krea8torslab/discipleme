@@ -9,6 +9,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged as firebaseOnAuthStateChanged,
@@ -35,6 +37,16 @@ export function onAuthStateChanged(callback) {
     if (index > -1) authStateListeners.splice(index, 1);
   };
 }
+
+// Check for redirect result on page load (for signInWithRedirect flow)
+getRedirectResult(auth).then(async (result) => {
+  if (result?.user) {
+    console.log('Google redirect sign-in successful');
+    // User signed in via redirect, auth state listener will handle the rest
+  }
+}).catch((error) => {
+  console.error('Redirect result error:', error);
+});
 
 // Initialize Firebase auth listener
 firebaseOnAuthStateChanged(auth, async (user) => {
@@ -88,13 +100,36 @@ async function ensureUserDocument(user) {
 
 /**
  * Sign in with Google
+ * Uses popup first, falls back to redirect if popup is blocked/cancelled
  */
 export async function signInWithGoogle() {
   try {
+    // First, try popup (faster, better UX when it works)
     const result = await signInWithPopup(auth, googleProvider);
     return { success: true, user: result.user };
   } catch (error) {
-    console.error('Google sign-in error:', error);
+    console.error('Google sign-in popup error:', error);
+    
+    // If popup was blocked or cancelled, try redirect instead
+    const popupErrors = [
+      'auth/popup-blocked',
+      'auth/popup-closed-by-user',
+      'auth/cancelled-popup-request'
+    ];
+    
+    if (popupErrors.includes(error.code)) {
+      console.log('Popup failed, falling back to redirect sign-in...');
+      try {
+        // This will redirect to Google, then back to the app
+        await signInWithRedirect(auth, googleProvider);
+        // Note: This won't return - page will redirect
+        return { success: true, redirecting: true };
+      } catch (redirectError) {
+        console.error('Redirect sign-in also failed:', redirectError);
+        return { success: false, error: getAuthErrorMessage(redirectError.code) };
+      }
+    }
+    
     return { success: false, error: getAuthErrorMessage(error.code) };
   }
 }
@@ -225,10 +260,23 @@ export function showAuthModal(mode = 'signin') {
 
   // Google auth
   document.getElementById('google-auth-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('google-auth-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting...';
+    btn.disabled = true;
+    
     const result = await signInWithGoogle();
+    
     if (result.success) {
-      modal.remove();
+      if (result.redirecting) {
+        // Page will redirect to Google, show a message
+        btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Redirecting to Google...';
+      } else {
+        modal.remove();
+      }
     } else {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
       showAuthError(result.error);
     }
   });
